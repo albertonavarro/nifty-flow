@@ -1,4 +1,4 @@
-package ext.de.lessvoid.nifty.flow;
+package com.navid.nifty.flow;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;

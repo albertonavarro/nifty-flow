@@ -1,4 +1,4 @@
-package ext.de.lessvoid.nifty.flow;
+package com.navid.nifty.flow;
 
 public final class ScreenConfiguration {
     private String screenName;
