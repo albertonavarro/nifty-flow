@@ -1,4 +1,4 @@
-package com.navid.nifty.flow;
+package com.navid.nifty.flow.temp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import java.util.Map;
 
 public final class ScreenFlowGraph {
 
-    private ScreenFlowGraph parent = null;
+    /*private ScreenFlowGraph parent = null;
     private final List<ScreenFlowUnit> modScreenConfigurations = new ArrayList<ScreenFlowUnit>();
     private final Map<String, ScreenFlowUnit> mapModScreenConfigurations = new HashMap<String, ScreenFlowUnit>();
 
@@ -62,6 +62,6 @@ public final class ScreenFlowGraph {
 
     void addParentFlow(ScreenFlowGraph parent) {
         this.parent = parent;
-    }
+    }*/
 
 }

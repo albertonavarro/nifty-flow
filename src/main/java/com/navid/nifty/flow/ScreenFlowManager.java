@@ -1,94 +1,120 @@
 package com.navid.nifty.flow;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
+import com.navid.nifty.flow.jgrapht.ScreenLink;
+import de.lessvoid.nifty.screen.ScreenController;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DirectedMultigraph;
 
-import static com.google.common.collect.Lists.newArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class ScreenFlowManager {
 
-    private final Map<String, ScreenFlowUnit> mapScreenDeclarations = new HashMap<String, ScreenFlowUnit>();
+    public static final String NEXT = "next";
+    public static final String PREV = "prev";
 
-    private final ScreenFlowState screenFlowState = new ScreenFlowState();
+    private final Map<String, ScreenConfiguration> configs = new HashMap<String, ScreenConfiguration>();
+    private final Map<String, ScreenFlowUnit> units = new HashMap<String, ScreenFlowUnit>();
+    private final Map<String, FlowDefinition> flows = new HashMap<String, FlowDefinition>();
 
-    private ScreenFlowGraph root = null;
+    private final InstanceResolutor instanceResolutor;
 
+    private final DirectedMultigraph<ScreenFlowUnit, ScreenLink> grapht = new DirectedMultigraph(ScreenLink.class);
 
-    private final Map<String, ScreenFlowGraph> screenFlowGraph = new HashMap<String, ScreenFlowGraph>();
+    private ScreenFlowUnit currentScreen;
+    private String nextScreenHint;
 
-    public ScreenFlowGraph addRootFlowGraph(String name) {
-        root = new ScreenFlowGraph();
-        screenFlowGraph.put(name, root);
-        for (ScreenFlowGraph current : screenFlowGraph.values()) {
-            current.addParentFlow(root);
-        }
-        return root;
+    public ScreenFlowManager( InstanceResolutor instanceResolutor ) {
+        this.instanceResolutor = instanceResolutor;
     }
 
-    public ScreenFlowGraph addFlowGraph(String name) {
-        ScreenFlowGraph result = new ScreenFlowGraph();
-        result.addParentFlow(root);
-        screenFlowGraph.put(name, result);
-        return result;
+    public synchronized void addScreenConfiguration(ScreenConfiguration screenConfiguration) {
+        Preconditions.checkArgument(!configs.containsKey(screenConfiguration.getScreenName()),
+                screenConfiguration.getScreenName() + " already declared.");
+
+        configs.put(screenConfiguration.getScreenName(), screenConfiguration);
     }
 
-    public List<String> getModuleNames() {
-        List<String> modules = newArrayList(Iterables.filter(screenFlowGraph.keySet(), new Predicate<String>() {
+    public synchronized void addFlowDefinition(FlowDefinition flowDefinition) {
+        Preconditions.checkArgument(!flowDefinition.getScreenNames().isEmpty());
+        Preconditions.checkArgument(!flows.containsKey(flowDefinition.getName()),
+                "Flow with name " + flowDefinition.getName() + " already defined");
 
-            @Override
-            public boolean apply(String t) {
-                return !t.equals("root");
+        if(flowDefinition.getName().equals("root")){
+            ScreenFlowUnit previousNode = null;
+            for(String screenName : flowDefinition.getScreenNames()){
+                Preconditions.checkArgument(configs.containsKey(screenName));
+                ScreenFlowUnit instance = instantiateConfiguration(flowDefinition.getName(), configs.get(screenName));
+                units.put(instance.getScreenName(), instance);
+                grapht.addVertex(instance);
+
+                if(previousNode != null) {
+                    grapht.addEdge(previousNode, instance, new ScreenLink(NEXT));
+                    grapht.addEdge(instance, previousNode, new ScreenLink(PREV));
+                }
+
+                previousNode = instance;
+                if(currentScreen==null){
+                    currentScreen = instance;
+                }
             }
-        }));
 
-        Collections.sort(modules);
-        return modules;
+        } else {
+            Preconditions.checkState(flows.containsKey("root"), "No root flow has been defined yet.");
+
+        }
+        flows.put(flowDefinition.getName(), flowDefinition);
+    }
+
+    private ScreenFlowUnit instantiateConfiguration(String prefix, ScreenConfiguration screenConfiguration) {
+        ScreenGenerator sg = instanceResolutor.resolveScreenGenerator(screenConfiguration.getInterfaceConstructor());
+        ScreenController sc = instanceResolutor.resolveScreenControler(screenConfiguration.getController());
+        ScreenFlowUnit sfu = new ScreenFlowUnit(prefix + ":" + screenConfiguration.getScreenName(), sg, sc);
+        return sfu;
     }
 
     public String nextScreen() {
-        if (screenFlowState.getCurrentFlow() == null) {
-            screenFlowState.setCurrentFlow(screenFlowState.getScreenCommand());
-            screenFlowState.setCurrentScreen(screenFlowGraph.get(screenFlowState.getCurrentFlow()).getStartScreenName());
+        Preconditions.checkState(flows.containsKey("root"), "No root flow has been defined yet.");
+        Set<ScreenLink> links = grapht.outgoingEdgesOf(currentScreen);
+
+        Iterable<ScreenLink> result;
+        if(NEXT.equals(nextScreenHint)) {
+            result = Iterables.filter(links, new FilterByEdgeName(NEXT));
+        } else if (PREV.equals(nextScreenHint)) {
+            result = Iterables.filter(links, new FilterByEdgeName(PREV));
+        } else if (nextScreenHint != null) {
+            result = Iterables.filter(links, new FilterByEdgeName(nextScreenHint));
         } else {
-            screenFlowState.setCurrentScreen(screenFlowGraph.get(screenFlowState.getCurrentFlow()).getNextScreenName(screenFlowState));
+            return currentScreen.getScreenName();
         }
 
-        ScreenFlowUnit nextScreenConfig
-                = screenFlowGraph.get(screenFlowState.getCurrentFlow()).getScreenConfiguration(screenFlowState.getCurrentScreen());
+        if(result.iterator().hasNext()){
+            currentScreen = grapht.getEdgeTarget(result.iterator().next());
+            return currentScreen.getScreenName();
+        } else {
+            return currentScreen.getScreenName();
+        }
 
-        nextScreenConfig.getInterfaceConstructor().buildScreen();
-
-        return screenFlowState.getCurrentScreen();
     }
 
-    public void changeFlow(String moduleName) {
-        screenFlowState.setCurrentFlow(moduleName);
-        screenFlowState.setCurrentScreen(null);
-        screenFlowState.setScreenCommand(null);
+    public void setNextScreenHint(String nextScreenHint) {
+        this.nextScreenHint = nextScreenHint;
     }
 
-    public void changeNextScreen() {
-        screenFlowState.setScreenCommand("next");
-    }
+    private static class FilterByEdgeName implements Predicate<ScreenLink>{
+        private final String name;
 
-    public void changePreviousScreen() {
-        screenFlowState.setScreenCommand("back");
-    }
+        public FilterByEdgeName(String name) {
+            this.name=name;
+        }
 
-    public void changeNextScreen(String nextScreen) {
-        screenFlowState.setScreenCommand(nextScreen);
-    }
+        @Override
+        public boolean apply(ScreenLink input) {
+            return input.getLinkName().equals(name);
+        }
 
-    public ScreenFlowUnit getScreen(String screenName) {
-        return mapScreenDeclarations.get(screenName);
     }
-
-    public void addScreenDeclaration(ScreenFlowUnit screenFlowUnit) {
-        mapScreenDeclarations.put(screenFlowUnit.getScreenName(), screenFlowUnit);
-    }
-
 }

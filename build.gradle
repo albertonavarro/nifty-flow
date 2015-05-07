@@ -21,7 +21,9 @@ ext{
             nifty_style_black: 'lessvoid:nifty-style-black:' + v.nifty,
             junit: 'junit:junit:4.10',
             slf4j_api: 'org.slf4j:slf4j-api:1.7.2',
-            guava: 'com.google.guava:guava:17.0'
+            guava: 'com.google.guava:guava:18.0',
+            jgrapht: 'org.jgrapht:jgrapht-core:0.9.1',
+            mockito: 'org.mockito:mockito-all:1.9.5'
     ]
 }
 
@@ -29,10 +31,12 @@ dependencies {
     compile (
             deps.nifty,
             deps.guava,
-            deps.slf4j_api
+            deps.slf4j_api,
+            deps.jgrapht
     )
 
     testCompile (
-            deps.junit
+            deps.junit,
+            deps.mockito
     )
 }
