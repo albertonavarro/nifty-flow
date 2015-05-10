@@ -1,5 +1,6 @@
 package com.navid.nifty.flow;
 
+import com.google.common.base.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static com.google.common.base.Optional.absent;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -58,7 +60,7 @@ public class ScreenFlowManagerTest {
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
 
-        FlowDefinition flowDefinition = new FlowDefinition("root", newArrayList("screen1", "screen2"));
+        FlowDefinition flowDefinition = new FlowDefinition("root", java.util.Optional.<String>empty(), newArrayList("screen1", "screen2"));
         tested.addFlowDefinition(flowDefinition);
         assertEquals(tested.nextScreen(), "root:screen1");
         tested.setNextScreenHint(ScreenFlowManager.NEXT);

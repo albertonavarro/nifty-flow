@@ -1,4 +1,4 @@
-package com.navid.nifty.flow.jgrapht;
+package com.navid.nifty.flow;
 
 /**
  * Created by alberto on 5/6/15.

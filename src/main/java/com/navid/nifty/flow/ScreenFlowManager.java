@@ -3,18 +3,16 @@ package com.navid.nifty.flow;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
-import com.navid.nifty.flow.jgrapht.ScreenLink;
 import de.lessvoid.nifty.screen.ScreenController;
-import org.jgrapht.Graph;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class ScreenFlowManager {
 
     public static final String NEXT = "next";
     public static final String PREV = "prev";
+    public static final String POP = "pop";
 
     private final Map<String, ScreenConfiguration> configs = new HashMap<String, ScreenConfiguration>();
     private final Map<String, ScreenFlowUnit> units = new HashMap<String, ScreenFlowUnit>();
@@ -115,6 +113,5 @@ public final class ScreenFlowManager {
         public boolean apply(ScreenLink input) {
             return input.getLinkName().equals(name);
         }
-
     }
 }
