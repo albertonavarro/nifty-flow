@@ -60,7 +60,7 @@ public class ScreenFlowManagerTest {
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
 
-        FlowDefinition flowDefinition = new FlowDefinition("root", java.util.Optional.<String>empty(), newArrayList("screen1", "screen2"));
+        FlowDefinition flowDefinition = new FlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2"));
         tested.addFlowDefinition(flowDefinition);
         assertEquals(tested.nextScreen(), "root:screen1");
         tested.setNextScreenHint(ScreenFlowManager.NEXT);
@@ -78,7 +78,7 @@ public class ScreenFlowManagerTest {
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
 
-        FlowDefinition flowDefinition = new FlowDefinition("flow1", newArrayList("screen1", "screen2"));
+        FlowDefinition flowDefinition = new FlowDefinition("flow1", Optional.<String>absent(), newArrayList("screen1", "screen2"));
         tested.addFlowDefinition(flowDefinition);
         fail();
     }
