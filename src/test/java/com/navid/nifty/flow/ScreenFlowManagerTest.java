@@ -1,6 +1,9 @@
 package com.navid.nifty.flow;
 
 import com.google.common.base.Optional;
+import com.navid.nifty.flow.dto.FlowDefinition;
+import com.navid.nifty.flow.dto.ScreenDefinition;
+import com.navid.nifty.flow.dto.ScreenInstance;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.google.common.base.Optional.absent;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -23,7 +25,7 @@ public class ScreenFlowManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        tested = new ScreenFlowManager(instanceResolutor);
+        tested = new ScreenFlowManagerImpl(instanceResolutor);
     }
 
     @After
@@ -33,9 +35,9 @@ public class ScreenFlowManagerTest {
 
     @Test
     public void shouldTakeScreenConfigurations() {
-        ScreenConfiguration sc1 = new ScreenConfiguration("screen1", "controllerClass", "interfaceConstructor");
-        ScreenConfiguration sc2 = new ScreenConfiguration("screen2", "controllerClass2", "interfaceConstructor2");
-        ScreenConfiguration sc3 = new ScreenConfiguration("screen3", "controllerClass", "interfaceConstructor2");
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
         tested.addScreenConfiguration(sc1);
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
@@ -43,9 +45,9 @@ public class ScreenFlowManagerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotTakeRepeatedScreenConfigurations() throws Exception {
-        ScreenConfiguration sc1 = new ScreenConfiguration("screen1", "controllerClass", "interfaceConstructor");
-        ScreenConfiguration sc2 = new ScreenConfiguration("screen2", "controllerClass2", "interfaceConstructor2");
-        ScreenConfiguration sc3 = new ScreenConfiguration("screen1", "controllerClass3", "interfaceConstructor3");
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen1", "controllerClass3", "interfaceConstructor3");
         tested.addScreenConfiguration(sc1);
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
@@ -53,15 +55,14 @@ public class ScreenFlowManagerTest {
 
     @Test
     public void shouldCreateRootFlow() {
-        ScreenConfiguration sc1 = new ScreenConfiguration("screen1", "controllerClass", "interfaceConstructor");
-        ScreenConfiguration sc2 = new ScreenConfiguration("screen2", "controllerClass2", "interfaceConstructor2");
-        ScreenConfiguration sc3 = new ScreenConfiguration("screen3", "controllerClass", "interfaceConstructor2");
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
         tested.addScreenConfiguration(sc1);
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
 
-        FlowDefinition flowDefinition = new FlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2"));
-        tested.addFlowDefinition(flowDefinition);
+        tested.addFlowDefinition("root", Optional.<ScreenInstance>absent(), newArrayList("screen1", "screen2"));
         assertEquals(tested.nextScreen(), "root:screen1");
         tested.setNextScreenHint(ScreenFlowManager.NEXT);
         assertEquals(tested.nextScreen(), "root:screen2");
@@ -71,15 +72,14 @@ public class ScreenFlowManagerTest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfRootFlowDoesntExist() {
-        ScreenConfiguration sc1 = new ScreenConfiguration("screen1", "controllerClass", "interfaceConstructor");
-        ScreenConfiguration sc2 = new ScreenConfiguration("screen2", "controllerClass2", "interfaceConstructor2");
-        ScreenConfiguration sc3 = new ScreenConfiguration("screen3", "controllerClass", "interfaceConstructor2");
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
         tested.addScreenConfiguration(sc1);
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
 
-        FlowDefinition flowDefinition = new FlowDefinition("flow1", Optional.<String>absent(), newArrayList("screen1", "screen2"));
-        tested.addFlowDefinition(flowDefinition);
+        tested.addFlowDefinition("flow1", Optional.<ScreenInstance>absent(), newArrayList("screen1", "screen2"));
         fail();
     }
 
