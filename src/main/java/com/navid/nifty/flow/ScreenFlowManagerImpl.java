@@ -9,7 +9,8 @@ import com.google.common.collect.Lists;
 import com.navid.nifty.flow.domain.Flow;
 import com.navid.nifty.flow.domain.Screen;
 import com.navid.nifty.flow.dto.ScreenDefinition;
-import com.navid.nifty.flow.dto.ScreenInstance;
+import com.navid.nifty.flow.domain.ScreenId;
+import com.navid.nifty.flow.jgrapht.GraphLink;
 import de.lessvoid.nifty.screen.ScreenController;
 import org.jgrapht.graph.DirectedMultigraph;
 
@@ -19,20 +20,20 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static com.navid.nifty.flow.domain.ScreenId.fromString;
 
 /**
- * Created by alberto on 12/05/15.
+ * Main class to control what's next screen based on current, hint and graph
  */
 public class ScreenFlowManagerImpl implements ScreenFlowManager{
 
     private final Map<String, ScreenDefinition> screenDefinitions = new HashMap<String, ScreenDefinition>();
-    private final Map<String, ScreenFlowUnit> units = new HashMap<String, ScreenFlowUnit>();
     private final Map<String, Flow> flows = new HashMap<String, Flow>();
 
     private final InstanceResolutor instanceResolutor;
 
-    private final DirectedMultigraph<Screen, String> graph
-            = new DirectedMultigraph<Screen, String>(String.class);
+    private final DirectedMultigraph<Screen, GraphLink> graph
+            = new DirectedMultigraph<Screen, GraphLink>(GraphLink.class);
 
     private Flow rootFlowDefinition;
     private Screen currentScreen;
@@ -51,37 +52,52 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
     }
 
     @Override
-    public void addFlowDefinition(String flowName, final Optional<ScreenInstance> screenNameFrom, List<String> flowDefinition) {
-        if(screenNameFrom.isPresent()){
+    public void addFlowDefinition(String flowName, final Optional<String> screenName, List<String> flowDefinition) {
+        if(screenName.isPresent()){
+            ScreenId screenInstanceFrom = fromString(screenName.get());
             //CHILD FLOW
-            if(!flows.containsKey(screenNameFrom.get().getFlowName())){
-                throw new RuntimeException("Parent flow declared not found: " + screenNameFrom.get().getFlowName());
+            if(!flows.containsKey(screenInstanceFrom.getFlowName())){
+                throw new IllegalStateException("Parent flow declared not found: " + screenInstanceFrom.getFlowName());
             }
 
+            Flow parentFlow = flows.get(screenInstanceFrom.getFlowName());
+            Screen parentScreen = parentFlow.getScreen(screenInstanceFrom.getScreenName());
 
+            Flow flow = createFlow(flowName, flowDefinition);
+            flows.put(flowName, flow);
 
+            addToGraph(flow, parentScreen);
         } else {
             //ROOT FLOW
             if(rootFlowDefinition != null) {
-                throw new RuntimeException("Root flow already declared with name " + rootFlowDefinition.getName() + " while declaring root flow " + flowName);
+                throw new IllegalStateException("Root flow already declared with name " + rootFlowDefinition.getName() + " while declaring root flow " + flowName);
             }
 
-            rootFlowDefinition = new Flow(flowName);
-            List<Screen> listScreens = newArrayList( Lists.transform(flowDefinition, new STRING_TO_SCREEN(rootFlowDefinition)));
-            rootFlowDefinition.setScreens(listScreens);
+            rootFlowDefinition = createFlow(flowName, flowDefinition);
+            flows.put(flowName, rootFlowDefinition);
 
-            addToGraph(rootFlowDefinition);
+            addToGraph(rootFlowDefinition, null);
         }
 
     }
 
-    private void addToGraph(Flow rootFlowDefinition) {
+    private Flow createFlow(String flowName, List<String> flowDefinition) {
+        Flow flow = new Flow(flowName);
+        List<Screen> listScreens = newArrayList( Lists.transform(flowDefinition, new STRING_TO_SCREEN(flow)));
+        flow.setScreens(listScreens);
+        return flow;
+    }
+
+    private void addToGraph(Flow rootFlowDefinition, Screen parentScreen) {
         Screen previous = null;
         for(Screen current : rootFlowDefinition.getScreens()) {
             graph.addVertex(current);
             if(previous!=null){
-                graph.addEdge(previous, current, new String(NEXT));
-                graph.addEdge(current, previous, new String(PREV));
+                graph.addEdge(previous, current, new GraphLink(NEXT));
+                graph.addEdge(current, previous, new GraphLink(PREV));
+            } else if (parentScreen != null) {
+                graph.addEdge(parentScreen, current, new GraphLink(rootFlowDefinition.getName()));
+                graph.addEdge(current, parentScreen, new GraphLink(PREV));
             }
             previous = current;
         }
@@ -111,17 +127,17 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
     public String nextScreen() {
         if(currentScreen == null) {
             currentScreen = rootFlowDefinition.getScreens().get(0);
-            return currentScreen.getUniqueScreenName();
         } else {
             if(nextScreenHint != null) {
-                Set<String> edges = graph.outgoingEdgesOf(currentScreen);
-                String edge = Iterables.find(edges, new FilterByEdgeName(nextScreenHint));
-                currentScreen = graph.getEdgeTarget(edge);
-                return currentScreen.getUniqueScreenName();
-            } else {
-                return currentScreen.getUniqueScreenName();
+                Set<GraphLink> edges = graph.outgoingEdgesOf(currentScreen);
+                Optional<GraphLink> edge = Iterables.tryFind(edges, new FilterByEdgeName(nextScreenHint));
+                if(edge.isPresent()){
+                    currentScreen = graph.getEdgeTarget(edge.get());
+                }
             }
         }
+        nextScreenHint = null;
+        return currentScreen.getUniqueScreenName();
     }
 
     @Override
@@ -129,7 +145,7 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
         this.nextScreenHint = nextScreenHint;
     }
 
-    private static class FilterByEdgeName implements Predicate<String> {
+    private static class FilterByEdgeName implements Predicate<GraphLink> {
         private final String name;
 
         public FilterByEdgeName(String name) {
@@ -137,8 +153,8 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
         }
 
         @Override
-        public boolean apply(String input) {
-            return input.equals(name);
+        public boolean apply(GraphLink input) {
+            return input.getLinkName().equals(name);
         }
     }
 }

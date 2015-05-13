@@ -1,5 +1,8 @@
 package com.navid.nifty.flow.dto;
 
+/**
+ * This class represents the static configuration to be loaded and instantiated
+ */
 public final class ScreenDefinition {
     private final String screenName;
     private final String controller;

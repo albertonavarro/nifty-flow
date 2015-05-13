@@ -1,7 +1,6 @@
 package com.navid.nifty.flow.domain;
 
 import com.navid.nifty.flow.ScreenGenerator;
-import com.navid.nifty.flow.dto.ScreenInstance;
 import de.lessvoid.nifty.screen.ScreenController;
 
 /**
@@ -33,7 +32,7 @@ public class Screen {
     }
 
     public String getUniqueScreenName() {
-        return new ScreenInstance(parent.getName(), name).getUniqueName();
+        return new ScreenId(parent.getName(), name).getUniqueName();
     }
 
 
