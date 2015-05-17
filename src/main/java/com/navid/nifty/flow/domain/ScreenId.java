@@ -27,10 +27,11 @@ public class ScreenId {
     }
 
     public static ScreenId fromString(String uniqueId) {
-        if(uniqueId.split(":").length != 2) {
+        String[] parts = uniqueId.split(":");
+        if(parts.length != 2) {
             throw new IllegalArgumentException("Wrong format for screen unique id, it should be flow:screenId, and it was " + uniqueId);
         }
-        return new ScreenId(uniqueId.split(":")[0], uniqueId.split(":")[1]);
+        return new ScreenId(parts[0], parts[1]);
     }
 
     @Override
