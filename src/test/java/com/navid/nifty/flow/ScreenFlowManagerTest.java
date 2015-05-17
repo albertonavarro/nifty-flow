@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -78,7 +79,7 @@ public class ScreenFlowManagerTest {
         tested.addScreenConfiguration(sc2);
         tested.addScreenConfiguration(sc3);
 
-        FlowDefinition flowDefinition = new FlowDefinition("flow1", newArrayList("screen1", "screen2"));
+        FlowDefinition flowDefinition = new FlowDefinition("flow1", of("unexisting"), newArrayList("screen1", "screen2"));
         tested.addFlowDefinition(flowDefinition);
         fail();
     }
