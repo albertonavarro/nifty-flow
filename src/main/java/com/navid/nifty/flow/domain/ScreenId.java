@@ -27,6 +27,9 @@ public class ScreenId {
     }
 
     public static ScreenId fromString(String uniqueId) {
+        if(uniqueId.split(":").length != 2) {
+            throw new IllegalArgumentException("Wrong format for screen unique id, it should be flow:screenId, and it was " + uniqueId);
+        }
         return new ScreenId(uniqueId.split(":")[0], uniqueId.split(":")[1]);
     }
 

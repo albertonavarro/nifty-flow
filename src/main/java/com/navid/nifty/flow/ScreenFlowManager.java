@@ -10,7 +10,7 @@ public interface ScreenFlowManager {
     String PREV = "prev";
     String POP = "pop";
 
-    void addScreenConfiguration(ScreenDefinition screenDefinition);
+    void addScreenDefinition(ScreenDefinition screenDefinition);
 
     void addFlowDefinition(String flowName, final Optional<String> screenNameFrom, List<String> flowDefinition);
 

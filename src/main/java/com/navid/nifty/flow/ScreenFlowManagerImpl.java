@@ -44,7 +44,7 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
     }
 
     @Override
-    public void addScreenConfiguration(ScreenDefinition screenDefinition) {
+    public void addScreenDefinition(ScreenDefinition screenDefinition) {
         Preconditions.checkArgument(!screenDefinitions.containsKey(screenDefinition.getScreenName()),
                 screenDefinition.getScreenName() + " already declared.");
 
