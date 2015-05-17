@@ -1,17 +1,25 @@
 
-// Apply the java plugin to add support for Java
 apply plugin: 'java'
 apply plugin: 'maven'
 
-// In this section you declare where to find the dependencies of your project
 repositories {
     mavenLocal()
     jcenter()
     maven{url 'http://nifty-gui.sourceforge.net/nifty-maven-repo'}
 }
 
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
 group = "com.navid.nifty"
 version = "0.1.0"
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.artifactId = 'nifty-flow'
+        pom.groupId = 'com.navid.nifty'
+    }
+}
 
 ext{
     v = [

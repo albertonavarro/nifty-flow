@@ -1,6 +1,7 @@
 package com.navid.nifty.flow;
 
 import com.google.common.base.Optional;
+import com.navid.nifty.flow.dto.ScreenDefinition;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
