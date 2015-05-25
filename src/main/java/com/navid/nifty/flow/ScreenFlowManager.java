@@ -3,6 +3,7 @@ package com.navid.nifty.flow;
 import com.google.common.base.Optional;
 import com.navid.nifty.flow.dto.ScreenDefinition;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ScreenFlowManager {
@@ -17,4 +18,6 @@ public interface ScreenFlowManager {
     String nextScreen();
 
     void setNextScreenHint(String nextScreenHint);
+
+    Collection<String> getChildren();
 }

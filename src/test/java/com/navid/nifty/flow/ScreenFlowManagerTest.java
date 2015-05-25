@@ -10,11 +10,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Collection;
+
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ScreenFlowManagerTest {
@@ -85,7 +86,7 @@ public class ScreenFlowManagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailIfRootFormatIsIncorrect() {
+    public void shouldFailIfScreenIsRepeatedInTheSameFlow() {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
@@ -93,12 +94,119 @@ public class ScreenFlowManagerTest {
         tested.addScreenDefinition(sc2);
         tested.addScreenDefinition(sc3);
 
-        tested.addFlowDefinition("flow1", of("wrongFormat"), newArrayList("screen1", "screen2"));
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen1"));
         fail();
     }
 
     @Test
-    public void testNextScreen() throws Exception {
+    public void shouldNotMoveWithoutHints() {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+        tested.addScreenDefinition(sc3);
 
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2", "screen3"));
+        assertEquals(tested.nextScreen(), "root:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.NEXT);
+        assertEquals(tested.nextScreen(), "root:screen2");
+        //If next screen is invoked, without hints, we expect the same screen.
+        assertEquals(tested.nextScreen(), "root:screen2");
     }
+
+    @Test
+    public void shouldNotMoveWithWrongHints() {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+        tested.addScreenDefinition(sc3);
+
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2", "screen3"));
+        assertEquals(tested.nextScreen(), "root:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.PREV);
+        assertEquals(tested.nextScreen(), "root:screen1");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldFailIfParentFlowDoesntExist() {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+        tested.addScreenDefinition(sc3);
+
+        tested.addFlowDefinition("flow1", of("parent:screen2"), newArrayList("screen1", "screen2"));
+        fail();
+    }
+
+    @Test
+    public void shouldCreateChildFlowAndWalkIt() {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+        tested.addScreenDefinition(sc3);
+
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2"));
+        tested.addFlowDefinition("child1", of("root:screen2"), newArrayList("screen1", "screen2"));
+        tested.addFlowDefinition("child2", of("root:screen1"), newArrayList("screen1", "screen2"));
+
+        assertEquals(tested.nextScreen(), "root:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.NEXT);
+        assertEquals(tested.nextScreen(), "root:screen2");
+        tested.setNextScreenHint("child1");
+        assertEquals(tested.nextScreen(), "child1:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.NEXT);
+        assertEquals(tested.nextScreen(), "child1:screen2");
+        tested.setNextScreenHint(ScreenFlowManager.PREV);
+        assertEquals(tested.nextScreen(), "child1:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.PREV);
+        assertEquals(tested.nextScreen(), "root:screen2");
+        tested.setNextScreenHint(ScreenFlowManager.PREV);
+        assertEquals(tested.nextScreen(), "root:screen1");
+        tested.setNextScreenHint("child2");
+        assertEquals(tested.nextScreen(), "child2:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.NEXT);
+        assertEquals(tested.nextScreen(), "child2:screen2");
+        tested.setNextScreenHint(ScreenFlowManager.PREV);
+        assertEquals(tested.nextScreen(), "child2:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.PREV);
+        assertEquals(tested.nextScreen(), "root:screen1");
+    }
+
+    @Test
+    public void shouldReturnEmptyChildren() {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2"));
+        tested.addFlowDefinition("child1", of("root:screen2"), newArrayList("screen1", "screen2"));
+
+        Collection<String> children = tested.getChildren();
+        assertTrue(children.isEmpty());
+    }
+
+    @Test
+    public void shouldReturnChildren() {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2"));
+        tested.addFlowDefinition("child1", of("root:screen2"), newArrayList("screen1", "screen2"));
+        tested.setNextScreenHint(ScreenFlowManager.NEXT);
+        assertEquals(tested.nextScreen(), "root:screen2");
+
+        Collection<String> children = tested.getChildren();
+        assertFalse(children.isEmpty());
+    }
+
 }

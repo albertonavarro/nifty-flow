@@ -10,14 +10,14 @@ import com.navid.nifty.flow.domain.Flow;
 import com.navid.nifty.flow.domain.Screen;
 import com.navid.nifty.flow.dto.ScreenDefinition;
 import com.navid.nifty.flow.domain.ScreenId;
+import com.navid.nifty.flow.jgrapht.ExitModuleGraphLink;
 import com.navid.nifty.flow.jgrapht.GraphLink;
+import com.navid.nifty.flow.jgrapht.ImplicitGraphLink;
+import com.navid.nifty.flow.jgrapht.ModuleGraphLink;
 import de.lessvoid.nifty.screen.ScreenController;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.navid.nifty.flow.domain.ScreenId.fromString;
@@ -75,6 +75,7 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
 
             rootFlowDefinition = createFlow(flowName, flowDefinition);
             flows.put(flowName, rootFlowDefinition);
+            currentScreen = rootFlowDefinition.getScreens().get(0);
 
             addToGraph(rootFlowDefinition, null);
         }
@@ -93,11 +94,11 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
         for(Screen current : rootFlowDefinition.getScreens()) {
             graph.addVertex(current);
             if(previous!=null){
-                graph.addEdge(previous, current, new GraphLink(NEXT));
-                graph.addEdge(current, previous, new GraphLink(PREV));
+                graph.addEdge(previous, current, new ImplicitGraphLink(NEXT));
+                graph.addEdge(current, previous, new ImplicitGraphLink(PREV));
             } else if (parentScreen != null) {
-                graph.addEdge(parentScreen, current, new GraphLink(rootFlowDefinition.getName()));
-                graph.addEdge(current, parentScreen, new GraphLink(PREV));
+                graph.addEdge(parentScreen, current, new ModuleGraphLink(rootFlowDefinition.getName()));
+                graph.addEdge(current, parentScreen, new ExitModuleGraphLink(PREV));
             }
             previous = current;
         }
@@ -125,17 +126,14 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
 
     @Override
     public String nextScreen() {
-        if(currentScreen == null) {
-            currentScreen = rootFlowDefinition.getScreens().get(0);
-        } else {
-            if(nextScreenHint != null) {
-                Set<GraphLink> edges = graph.outgoingEdgesOf(currentScreen);
-                Optional<GraphLink> edge = Iterables.tryFind(edges, new FilterByEdgeName(nextScreenHint));
-                if(edge.isPresent()){
-                    currentScreen = graph.getEdgeTarget(edge.get());
-                }
+        if(nextScreenHint != null) {
+            Set<GraphLink> edges = graph.outgoingEdgesOf(currentScreen);
+            Optional<GraphLink> edge = Iterables.tryFind(edges, new FilterByEdgeName(nextScreenHint));
+            if(edge.isPresent()){
+                currentScreen = graph.getEdgeTarget(edge.get());
             }
         }
+
         nextScreenHint = null;
         return currentScreen.getUniqueScreenName();
     }
@@ -143,6 +141,17 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
     @Override
     public void setNextScreenHint(String nextScreenHint) {
         this.nextScreenHint = nextScreenHint;
+    }
+
+    @Override
+    public Collection<String> getChildren() {
+        Iterable<GraphLink> result = Iterables.filter(graph.outgoingEdgesOf(currentScreen), new FilterByEdgeType(ModuleGraphLink.class));
+        return newArrayList(Iterables.transform(result, new Function<GraphLink, String>() {
+            @Override
+            public String apply(GraphLink input) {
+                return input.getLinkName();
+            }
+        }));
     }
 
     private static class FilterByEdgeName implements Predicate<GraphLink> {
@@ -155,6 +164,19 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
         @Override
         public boolean apply(GraphLink input) {
             return input.getLinkName().equals(name);
+        }
+    }
+
+    private static class FilterByEdgeType implements Predicate<GraphLink> {
+        private final Class<? extends GraphLink> type;
+
+        private FilterByEdgeType(Class<? extends GraphLink> type) {
+            this.type = type;
+        }
+
+        @Override
+        public boolean apply(GraphLink input) {
+            return (type.isInstance(input));
         }
     }
 }
