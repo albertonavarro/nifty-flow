@@ -1,5 +1,10 @@
 package com.navid.nifty.flow.domain;
 
+import com.google.common.base.Optional;
+
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+
 /**
  * This class represents a screen identity uniquely among the graph.
  */
@@ -26,12 +31,12 @@ public class ScreenId {
         return flowName + ":" + screenName;
     }
 
-    public static ScreenId fromString(String uniqueId) {
+    public static Optional<ScreenId> fromString(String uniqueId) {
         String[] parts = uniqueId.split(":");
         if(parts.length != 2) {
-            throw new IllegalArgumentException("Wrong format for screen unique id, it should be flow:screenId, and it was " + uniqueId);
+            return absent();
         }
-        return new ScreenId(parts[0], parts[1]);
+        return of( new ScreenId(parts[0], parts[1]));
     }
 
     @Override

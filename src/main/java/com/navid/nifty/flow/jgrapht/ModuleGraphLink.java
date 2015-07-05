@@ -1,7 +1,7 @@
 package com.navid.nifty.flow.jgrapht;
 
 /**
- * Created by alberto on 5/25/15.
+ * This link is used there where user has defined links between screens or modules
  */
 public class ModuleGraphLink extends GraphLink {
 

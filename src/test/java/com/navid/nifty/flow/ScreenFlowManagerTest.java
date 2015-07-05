@@ -1,8 +1,10 @@
 package com.navid.nifty.flow;
 
 import com.google.common.base.Optional;
+import com.navid.nifty.flow.domain.Screen;
 import com.navid.nifty.flow.dto.FlowDefinition;
 import com.navid.nifty.flow.dto.ScreenDefinition;
+import de.lessvoid.nifty.Nifty;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +18,8 @@ import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ScreenFlowManagerTest {
@@ -23,11 +27,14 @@ public class ScreenFlowManagerTest {
     private ScreenFlowManager tested;
 
     @Mock
+    private Nifty nifty;
+
+    @Mock
     private InstanceResolutor instanceResolutor;
 
     @Before
     public void setUp() throws Exception {
-        tested = new ScreenFlowManagerImpl(instanceResolutor);
+        tested = new ScreenFlowManagerImpl(nifty, instanceResolutor);
     }
 
     @After
@@ -36,7 +43,7 @@ public class ScreenFlowManagerTest {
     }
 
     @Test
-    public void shouldTakeScreenDefinitions() {
+    public void shouldTakeScreenDefinitions() throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
@@ -56,10 +63,16 @@ public class ScreenFlowManagerTest {
     }
 
     @Test
-    public void shouldCreateRootFlow() {
+    public void shouldCreateRootFlow()  throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+        ScreenGenerator interfaceConstructor = mock(ScreenGenerator.class);
+        ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
+
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
         tested.addScreenDefinition(sc3);
@@ -73,7 +86,7 @@ public class ScreenFlowManagerTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldFailIfRootFlowDoesntExist() {
+    public void shouldFailIfRootFlowDoesntExist()  throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
@@ -86,7 +99,7 @@ public class ScreenFlowManagerTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldFailIfScreenIsRepeatedInTheSameFlow() {
+    public void shouldFailIfScreenIsRepeatedInTheSameFlow()  throws Exception  {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
@@ -99,10 +112,17 @@ public class ScreenFlowManagerTest {
     }
 
     @Test
-    public void shouldNotMoveWithoutHints() {
+    public void shouldNotMoveWithoutHints() throws Exception  {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+
+        ScreenGenerator interfaceConstructor = mock(ScreenGenerator.class);
+        ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
+
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
         tested.addScreenDefinition(sc3);
@@ -116,10 +136,17 @@ public class ScreenFlowManagerTest {
     }
 
     @Test
-    public void shouldNotMoveWithWrongHints() {
+    public void shouldNotMoveWithWrongHints() throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+
+        ScreenGenerator interfaceConstructor = mock(ScreenGenerator.class);
+        ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
+
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
         tested.addScreenDefinition(sc3);
@@ -131,7 +158,7 @@ public class ScreenFlowManagerTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void shouldFailIfParentFlowDoesntExist() {
+    public void shouldFailIfParentFlowDoesntExist() throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
@@ -144,10 +171,17 @@ public class ScreenFlowManagerTest {
     }
 
     @Test
-    public void shouldCreateChildFlowAndWalkIt() {
+    public void shouldCreateChildFlowAndWalkIt() throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+
+        ScreenGenerator interfaceConstructor = mock(ScreenGenerator.class);
+        ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
+
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
         tested.addScreenDefinition(sc3);
@@ -180,7 +214,7 @@ public class ScreenFlowManagerTest {
     }
 
     @Test
-    public void shouldReturnEmptyChildren() {
+    public void shouldReturnEmptyChildren() throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
         tested.addScreenDefinition(sc1);
@@ -194,9 +228,16 @@ public class ScreenFlowManagerTest {
     }
 
     @Test
-    public void shouldReturnChildren() {
+    public void shouldReturnChildren() throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
         ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+
+        ScreenGenerator interfaceConstructor = mock(ScreenGenerator.class);
+        ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
+
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
 

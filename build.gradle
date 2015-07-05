@@ -11,7 +11,7 @@ repositories {
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
 group = "com.navid.nifty"
-version = "0.1.1"
+version = "0.2.2"
 
 install {
     repositories.mavenInstaller {
@@ -35,7 +35,9 @@ ext{
             slf4j_api: 'org.slf4j:slf4j-api:1.7.2',
             guava: 'com.google.guava:guava:18.0',
             jgrapht: 'org.jgrapht:jgrapht-core:0.9.1',
-            mockito: 'org.mockito:mockito-all:1.9.5'
+            mockito: 'org.mockito:mockito-all:1.9.5',
+            freemarker: 'org.freemarker:freemarker:2.3.21',
+            apache_commons_io: 'commons-io:commons-io:2.4'
     ]
 }
 
@@ -44,7 +46,9 @@ dependencies {
             deps.nifty,
             deps.guava,
             deps.slf4j_api,
-            deps.jgrapht
+            deps.jgrapht,
+            deps.freemarker,
+            deps.apache_commons_io
     )
 
     testCompile (

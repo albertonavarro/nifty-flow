@@ -2,6 +2,7 @@ package com.navid.nifty.flow;
 
 import com.google.common.base.Optional;
 import com.navid.nifty.flow.dto.ScreenDefinition;
+import com.navid.nifty.flow.resolutors.InstanceResolutionException;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,7 +12,7 @@ public interface ScreenFlowManager {
     String PREV = "prev";
     String POP = "pop";
 
-    void addScreenDefinition(ScreenDefinition screenDefinition);
+    void addScreenDefinition(ScreenDefinition screenDefinition) throws InstanceResolutionException;
 
     void addFlowDefinition(String flowName, final Optional<String> screenNameFrom, List<String> flowDefinition);
 

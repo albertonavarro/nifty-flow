@@ -2,6 +2,6 @@ package com.navid.nifty.flow;
 
 public interface ScreenGenerator {
 
-    void buildScreen();
+    void buildScreen(String uniqueScreenId);
 
 }

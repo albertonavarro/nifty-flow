@@ -14,6 +14,8 @@ import com.navid.nifty.flow.jgrapht.ExitModuleGraphLink;
 import com.navid.nifty.flow.jgrapht.GraphLink;
 import com.navid.nifty.flow.jgrapht.ImplicitGraphLink;
 import com.navid.nifty.flow.jgrapht.ModuleGraphLink;
+import com.navid.nifty.flow.resolutors.InstanceResolutionException;
+import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.ScreenController;
 import org.jgrapht.graph.DirectedMultigraph;
 
@@ -38,23 +40,31 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
     private Flow rootFlowDefinition;
     private Screen currentScreen;
     private String nextScreenHint;
+    private Nifty nifty;
 
-    public ScreenFlowManagerImpl(InstanceResolutor instanceResolutor) {
+    public ScreenFlowManagerImpl(Nifty nifty, InstanceResolutor instanceResolutor) {
         this.instanceResolutor = instanceResolutor;
+        this.nifty = nifty;
     }
 
     @Override
-    public void addScreenDefinition(ScreenDefinition screenDefinition) {
+    public void addScreenDefinition(ScreenDefinition screenDefinition) throws InstanceResolutionException {
         Preconditions.checkArgument(!screenDefinitions.containsKey(screenDefinition.getScreenName()),
                 screenDefinition.getScreenName() + " already declared.");
 
         screenDefinitions.put(screenDefinition.getScreenName(), screenDefinition);
+        nifty.registerScreenController(instanceResolutor.resolveScreenControler(screenDefinition.getController()));
     }
 
     @Override
     public void addFlowDefinition(String flowName, final Optional<String> screenName, List<String> flowDefinition) {
         if(screenName.isPresent()){
-            ScreenId screenInstanceFrom = fromString(screenName.get());
+            Optional<ScreenId> optionalScreenInstanceFrom = fromString(screenName.get());
+            if(!optionalScreenInstanceFrom.isPresent()){
+                throw new IllegalStateException("Parent flow must be formatted like flow:screen: " + screenName.get());
+            }
+
+            ScreenId screenInstanceFrom = optionalScreenInstanceFrom.get();
             //CHILD FLOW
             if(!flows.containsKey(screenInstanceFrom.getFlowName())){
                 throw new IllegalStateException("Parent flow declared not found: " + screenInstanceFrom.getFlowName());
@@ -115,26 +125,57 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
         public Screen apply(String screenName) {
             ScreenDefinition screenDefinition = screenDefinitions.get(screenName);
             ScreenGenerator interfaceConstructor
-                    = instanceResolutor.resolveScreenGenerator(screenDefinition.getInterfaceConstructor());
-            ScreenController controller
-                    = instanceResolutor.resolveScreenControler(screenDefinition.getController());
+                    = null;
+            try {
+                interfaceConstructor = instanceResolutor.resolveScreenGenerator(screenDefinition.getInterfaceConstructor());
+                ScreenController controller
+                        = instanceResolutor.resolveScreenControler(screenDefinition.getController());
 
-            Screen screen = new Screen(interfaceConstructor, controller, flow, screenName);
-            return screen;
+                Screen screen = new Screen(interfaceConstructor, controller, flow, screenName);
+                return screen;
+            } catch (InstanceResolutionException e) {
+                e.printStackTrace();
+            }
+            throw new RuntimeException();
         }
     }
 
     @Override
     public String nextScreen() {
+        Screen candidateScreen = null;
+
+        //First we try with the direct hint
         if(nextScreenHint != null) {
             Set<GraphLink> edges = graph.outgoingEdgesOf(currentScreen);
             Optional<GraphLink> edge = Iterables.tryFind(edges, new FilterByEdgeName(nextScreenHint));
             if(edge.isPresent()){
-                currentScreen = graph.getEdgeTarget(edge.get());
+                candidateScreen = graph.getEdgeTarget(edge.get());
             }
+
+            //then the hint as screen name
+            if(candidateScreen == null) {
+                Optional<ScreenId> optScreenId = ScreenId.fromString(nextScreenHint);
+                if(optScreenId.isPresent()){
+                    ScreenId screenId = optScreenId.get();
+                    //Reference to a global positioned screen.
+                    if(flows.containsKey(screenId.getFlowName())){
+                        candidateScreen = flows.get(screenId.getFlowName()).getScreen(screenId.getScreenName());
+                    }
+                } else {
+                    //Reference to a screen local to this flow.
+                    candidateScreen = currentScreen.getParent().getScreen(nextScreenHint);
+
+                }
+            }
+
+            if(candidateScreen != null){
+                currentScreen = candidateScreen;
+            }
+
+            nextScreenHint = null;
         }
 
-        nextScreenHint = null;
+        currentScreen.getInterfaceConstructor().buildScreen(currentScreen.getUniqueScreenName());
         return currentScreen.getUniqueScreenName();
     }
 
