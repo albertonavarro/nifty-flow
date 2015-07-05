@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+dependencies {
+    compile (
+            deps.nifty,
+            deps.guava,
+            deps.slf4j_api,
+            deps.jgrapht,
+            deps.freemarker,
+            deps.apache_commons_io
+    )
+
+    testCompile (
+            deps.junit,
+            deps.mockito
+    )
+}
