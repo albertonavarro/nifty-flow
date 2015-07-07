@@ -17,6 +17,5 @@ include 'services:webservice'
 */
 
 rootProject.name = 'nifty-flow'
-include 'examples:ex1'
 include 'core'
 
