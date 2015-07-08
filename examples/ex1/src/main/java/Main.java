@@ -70,7 +70,7 @@ public class Main extends SimpleApplication {
             screenFlowManager.addScreenDefinition(new ScreenDefinition("root", "live:root", "live:root"));
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen1", "live:controller1", "static:/screen.xml"));
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen2", "live:controller2", "live:generator2"));
-            screenFlowManager.addScreenDefinition(new ScreenDefinition("screen3", "live:controller3", "static:/screen.xml"));
+            screenFlowManager.addScreenDefinition(new ScreenDefinition("screen3", "live:controller1", "static:/screen.xml"));
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen4", "live:controller4", "live:generator4"));
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen5", "live:controller1", "static:/screen.xml"));
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen6", "live:controller4", "live:generator4"));
