@@ -30,8 +30,9 @@ public final class RedirectorScreenController implements ScreenController {
     /**
      * @param screenFlowManager the screenFlowManager to set
      */
-    public void setScreenFlowManager(ScreenFlowManager screenFlowManager) {
+    public RedirectorScreenController setScreenFlowManager(ScreenFlowManager screenFlowManager) {
         this.screenFlowManager = screenFlowManager;
+        return this;
     }
 
 }

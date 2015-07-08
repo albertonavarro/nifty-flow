@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nifty xmlns="http://nifty-gui.sourceforge.net/nifty.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty.xsd http://nifty-gui.sourceforge.net/nifty.xsd">
+    <useStyles filename="nifty-default-styles.xml" />
+    <useControls filename="nifty-default-controls.xml" />
+    
+    <screen id="${screenUniqueId}" controller="indep_screen1.Controller1">
+        <layer id="background" childLayout="center">
+        </layer>
+        <layer id="foreground" childLayout="vertical" style="nifty-panel-no-shadow">
+            <panel id="panel_top" height="15%" width="75%" align="center" childLayout="center">  
+                <text text="Welcome to ${screenUniqueId} - Static content" font="Interface/Fonts/Default.fnt" width="100%" height="100%" />
+            </panel>
+            <panel id="panel_bottom" height="15%" width="75%" align="center" childLayout="horizontal">  
+                <panel id="panel_bottom_right1" height="50%" width="25%" valign="center" childLayout="center">  
+                    <control name="button" label="Back" id="BackButton" align="center" valign="center"
+                             visibleToMouse="true" > 
+                        <interact onClick="back()"/>
+                    </control>
+                </panel>
+                <panel id="panel_bottom_right2" height="50%" width="25%" valign="center" childLayout="center">  
+                    <control name="button" label="Next" id="NextButton" align="center" valign="center"
+                             visibleToMouse="true" > 
+                        <interact onClick="next()"/>
+                    </control>
+                </panel>
+                <panel id="panel_bottom_right3" height="50%" width="25%" valign="center" childLayout="center">  
+                </panel>
+            </panel>
+        </layer>
+    </screen>
+
+</nifty>
+ 

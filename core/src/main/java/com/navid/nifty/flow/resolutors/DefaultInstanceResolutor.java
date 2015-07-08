@@ -34,7 +34,7 @@ public class DefaultInstanceResolutor implements InstanceResolutor {
 
             for(InstanceResolutor instanceResolutor : instanceResolutors) {
                 try {
-                    ScreenGenerator constructor = instanceResolutor.resolveScreenGenerator(interfaceConstructor);
+                    ScreenGenerator constructor = instanceResolutor.resolveScreenGenerator(uri.getSchemeSpecificPart());
                     if ( constructor != null) {
                         log.info("ScreenGenerator {} found in instanceResolutor {}", interfaceConstructor, instanceResolutor);
                         return constructor;
@@ -57,7 +57,7 @@ public class DefaultInstanceResolutor implements InstanceResolutor {
 
             for(InstanceResolutor instanceResolutor : instanceResolutors) {
                 try {
-                    ScreenController constructor = instanceResolutor.resolveScreenControler(controller);
+                    ScreenController constructor = instanceResolutor.resolveScreenControler(uri.getSchemeSpecificPart());
                     if ( constructor != null) {
                         log.info("ScreenController {} found in instanceResolutor {}", controller, instanceResolutor);
                         return constructor;

@@ -1,0 +1,55 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven{url 'http://nifty-gui.sourceforge.net/nifty-maven-repo'}
+}
+
+sourceCompatibility = '1.6'
+targetCompatibility = '1.6'
+
+group = "com.navid.nifty"
+version = "0.2.3"
+
+ext{
+    v = [
+            nifty: '1.3.3'
+    ]
+
+    deps = [
+            //NIFTY
+            nifty: 'lessvoid:nifty:'+ v.nifty,
+            nifty_default_controls: 'lessvoid:nifty-default-controls:' + v.nifty,
+            nifty_style_black: 'lessvoid:nifty-style-black:' + v.nifty,
+            junit: 'junit:junit:4.10',
+            slf4j_api: 'org.slf4j:slf4j-api:1.7.2',
+            guava: 'com.google.guava:guava:18.0',
+            jgrapht: 'org.jgrapht:jgrapht-core:0.9.1',
+            mockito: 'org.mockito:mockito-all:1.9.5',
+            freemarker: 'org.freemarker:freemarker:2.3.21',
+            apache_commons_io: 'commons-io:commons-io:2.4'
+    ]
+}
+
+dependencies {
+    compile (
+            deps.nifty,
+            deps.nifty_default_controls,
+            deps.nifty_style_black,
+            deps.slf4j_api,
+            deps.guava,
+            deps.jgrapht,
+            deps.freemarker,
+            deps.apache_commons_io
+    )
+
+    testCompile(
+            deps.junit,
+            deps.mockito
+    )
+}
+
+
+

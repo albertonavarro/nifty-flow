@@ -19,3 +19,6 @@ include 'services:webservice'
 rootProject.name = 'nifty-flow'
 include 'core'
 
+include 'examples/ex1'
+rootProject.children.find { it.name == 'examples/ex1' }.name = 'ex1'
+

@@ -13,4 +13,8 @@ public class InstanceResolutionException extends Exception {
     public InstanceResolutionException(String s) {
         super(s);
     }
+
+    public InstanceResolutionException(Exception e) {
+        super(e);
+    }
 }
