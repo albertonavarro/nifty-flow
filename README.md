@@ -20,26 +20,29 @@ maybe it can be included as part of core.
 
 Main concepts:
 --------------
-**Screen**: is a name (unique within the flow, but repeatable across flows), a flow it belongs to, a ScreenController (from
+**Screen**: is a uniique name, a flow it belongs to, a ScreenController (from 
 Nifty-gui) and a ScreenGenerator (that actually builds the screen when required).
 
-**Flow**: is a sequence of screen instances with a meaning together, they are supposed to be explored in a given order. It 
-requires the screens to be defined first.
+**Flow**: is a sequence of screen instances with a meaning together, they are supposed to be explored 
+in a given order. It requires the screens to be defined first.
 
 There's only one root flow, with absent parent, any other makes reference a screen of another flow.
 
-**Redirector**: is an special controller, declared in Nifty aside flows, and it will decide which is the next screen to visit
-after every screen.
+**Redirector**: is an special controller, declared in Nifty aside flows, and it will decide which is 
+the next screen to visit after every screen.
 
 **ScreenUniqueId**: flowName:screenName, it must be globally unique.
 
-**Hint**: is a String that helps the redirector to take the right decision to the next screen. It can be a protected word like
-*NEXT*, *PREV* or *POP*, it could be a screen name (to jump within the flow) or a screenUniqueId to jump to another flow.
+**Hint**: is a String that helps the redirector to take the right decision to the next screen. It can be 
+a protected word like *NEXT*, *PREV* or *POP*, it could be a screen name (to jump within the flow) or a 
+screenUniqueId to jump to another flow.
 
-**Instance resolutor**: is the way of telling Nifty-flow how to retrieve instances, as they could exist in a Guice or Spring
-environment, or being pure new instances, up to the consumer. This interface will ease integration with other systems.
+**Instance resolutor**: is the way of telling Nifty-flow how to retrieve instances, as they could exist 
+in a Guice or Spring environment, or being pure new instances, up to the consumer. This interface will ease 
+integration with other systems.
 
-**Links**: are the more predefined paths between screens, they are created automatically with different types like:
+**Links**: are the more predefined paths between screens, they are created automatically with different types 
+like:
  
  * *implicit*: NEXT and PREV between sequential.
  * *module*: between parent and child, with module name in the link.
@@ -48,8 +51,8 @@ environment, or being pure new instances, up to the consumer. This interface wil
 Setting up flow:
 ----------------
 I won't say it could be simpler, but it's worthy ;)
-In my scenario, nifty, the controllers and everything is in Spring, so I start preparing a instance resolutor (not yet
-included) to load beans from Spring:
+In my scenario, nifty, the controllers and everything is in Spring, so I start preparing a instance resolutor 
+(not yet included) to load beans from Spring:
 
 `//Main structures
 DefaultInstanceResolutor resolutorChain = new DefaultInstanceResolutor(); //or ctx.getBean(DefaultInstanceResolutor.class);
@@ -66,12 +69,14 @@ nifty.gotoScreen("redirector");`
 
 Lifecycle from here:
 --------------------
-Once redirector is invoked, it calculates given the flows included, current screen and the hint, the following screen, that's 
-invoked from the redirector.
+Once redirector is invoked, it calculates given the flows included, current screen and the hint, the 
+following screen, that's invoked from the redirector.
  
-That screen will start with the screenGenerator, the screen is build and loaded at this point from code or templated xml.
+That screen will start with the screenGenerator, the screen is build and loaded at this point from code 
+or templated xml.
 
-After screen has been loaded, normal nifty lifecycle is triggered, with startScreen, endScreen and normal controller calls.
+After screen has been loaded, normal nifty lifecycle is triggered, with startScreen, endScreen and normal 
+controller calls.
 
 From the controllers it's expected to have access to the flowManager, to be able to invoke:
 

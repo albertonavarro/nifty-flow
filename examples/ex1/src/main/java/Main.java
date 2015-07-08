@@ -72,12 +72,10 @@ public class Main extends SimpleApplication {
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen2", "live:controller2", "live:generator2"));
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen3", "live:controller1", "static:/screen.xml"));
             screenFlowManager.addScreenDefinition(new ScreenDefinition("screen4", "live:controller4", "live:generator4"));
-            screenFlowManager.addScreenDefinition(new ScreenDefinition("screen5", "live:controller1", "static:/screen.xml"));
-            screenFlowManager.addScreenDefinition(new ScreenDefinition("screen6", "live:controller4", "live:generator4"));
 
             screenFlowManager.addFlowDefinition("root", Optional.<String>absent(), newArrayList("root")); //parent is absent, this is root.
             screenFlowManager.addFlowDefinition("screenFlow1", of("root:root"), newArrayList("screen1", "screen2", "screen3", "screen4"));
-            screenFlowManager.addFlowDefinition("screenFlow2", of("root:root"), newArrayList("screen5", "screen6"));
+            screenFlowManager.addFlowDefinition("screenFlow2", of("root:root"), newArrayList("screen1", "screen4"));
 
             //Once I finished to load flows, I'm ready to start, mandatory name, mandatory implementation
             nifty.addScreen("redirector", new ScreenBuilder("start", new RedirectorScreenController().setScreenFlowManager(screenFlowManager)).build(nifty));
