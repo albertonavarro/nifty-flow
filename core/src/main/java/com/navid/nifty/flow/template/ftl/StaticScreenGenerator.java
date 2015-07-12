@@ -34,7 +34,7 @@ public class StaticScreenGenerator implements ScreenGenerator {
             Map root = new HashMap();
             root.put("screenUniqueId", screenUniqueId);
             try {
-                Template temp = configuration.getTemplate(getClass().getResource(templateFileName).getPath());
+                Template temp = configuration.getTemplate(templateFileName);
 
                 StringWriter sw = new StringWriter();
 

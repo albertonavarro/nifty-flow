@@ -1,5 +1,6 @@
 package com.navid.nifty.flow.template.ftl;
 
+import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 
@@ -28,6 +29,8 @@ public class FreemarkerConfiguration {
 // Sets how errors will appear.
 // During web page *development* TemplateExceptionHandler.HTML_DEBUG_HANDLER is better.
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+
+        cfg.setTemplateLoader(new ClassTemplateLoader());
 
         return cfg;
     }
