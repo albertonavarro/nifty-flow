@@ -18,7 +18,7 @@ install {
 }
 
 group = "com.navid.nifty"
-version = "0.3.1"
+version = "0.4.0"
 
 ext{
     v = [
@@ -35,7 +35,7 @@ ext{
             guava: 'com.google.guava:guava:18.0',
             jgrapht: 'org.jgrapht:jgrapht-core:0.9.1',
             mockito: 'org.mockito:mockito-all:1.9.5',
-            freemarker: 'org.freemarker:freemarker:2.3.21',
+            freemarker: 'org.freemarker:freemarker:2.3.23',
             apache_commons_io: 'commons-io:commons-io:2.4'
     ]
 }
