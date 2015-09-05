@@ -40,6 +40,7 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
     private Flow rootFlowDefinition;
     private Screen currentScreen;
     private String nextScreenHint;
+    private String lastScreenHint = null;
     private Nifty nifty;
 
     public ScreenFlowManagerImpl(Nifty nifty, InstanceResolutor instanceResolutor) {
@@ -144,6 +145,16 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
     public String nextScreen() {
         Screen candidateScreen = null;
 
+        if( SKIP.equals(nextScreenHint)){
+            if( PREV.equals(lastScreenHint)) {
+                nextScreenHint = PREV;
+            } else if(ScreenFlowManager.POP.equals(lastScreenHint)) {
+                nextScreenHint = POP;
+            } else {
+                nextScreenHint = NEXT;
+            }
+        }
+
         //First we try with the direct hint
         if(nextScreenHint != null) {
             Set<GraphLink> edges = graph.outgoingEdgesOf(currentScreen);
@@ -172,6 +183,7 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
                 currentScreen = candidateScreen;
             }
 
+            lastScreenHint = nextScreenHint;
             nextScreenHint = null;
         }
 

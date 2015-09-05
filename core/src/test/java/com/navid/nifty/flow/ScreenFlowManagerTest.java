@@ -157,6 +157,58 @@ public class ScreenFlowManagerTest {
         assertEquals(tested.nextScreen(), "root:screen1");
     }
 
+    @Test
+    public void shouldSkipForwards() throws Exception  {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+
+        ScreenGenerator interfaceConstructor = mock(ScreenGenerator.class);
+        ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
+
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+        tested.addScreenDefinition(sc3);
+
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2", "screen3"));
+        assertEquals(tested.nextScreen(), "root:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.NEXT);
+        assertEquals(tested.nextScreen(), "root:screen2");
+        tested.setNextScreenHint(ScreenFlowManager.SKIP);
+        assertEquals(tested.nextScreen(), "root:screen3");
+    }
+
+    @Test
+    public void shouldSkipBackwards() throws Exception  {
+        ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");
+        ScreenDefinition sc2 = new ScreenDefinition("screen2", "controllerClass2", "interfaceConstructor2");
+        ScreenDefinition sc3 = new ScreenDefinition("screen3", "controllerClass", "interfaceConstructor2");
+
+        ScreenGenerator interfaceConstructor = mock(ScreenGenerator.class);
+        ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
+
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+
+        tested.addScreenDefinition(sc1);
+        tested.addScreenDefinition(sc2);
+        tested.addScreenDefinition(sc3);
+
+        tested.addFlowDefinition("root", Optional.<String>absent(), newArrayList("screen1", "screen2", "screen3"));
+        assertEquals(tested.nextScreen(), "root:screen1");
+        tested.setNextScreenHint(ScreenFlowManager.NEXT);
+        assertEquals(tested.nextScreen(), "root:screen2");
+        tested.setNextScreenHint(ScreenFlowManager.SKIP);
+        assertEquals(tested.nextScreen(), "root:screen3");
+        tested.setNextScreenHint(ScreenFlowManager.PREV);
+        assertEquals(tested.nextScreen(), "root:screen2");
+        tested.setNextScreenHint(ScreenFlowManager.SKIP);
+        assertEquals(tested.nextScreen(), "root:screen1");
+    }
+
     @Test(expected = IllegalStateException.class)
     public void shouldFailIfParentFlowDoesntExist() throws Exception {
         ScreenDefinition sc1 = new ScreenDefinition("screen1", "controllerClass", "interfaceConstructor");

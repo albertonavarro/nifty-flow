@@ -10,7 +10,8 @@ import java.util.List;
 public interface ScreenFlowManager {
     String NEXT = "next";
     String PREV = "prev";
-    String POP = "pop";
+    String SKIP = "skip";
+    String POP = "pop"; //reserved for future use
 
     void addScreenDefinition(ScreenDefinition screenDefinition) throws InstanceResolutionException;
 
