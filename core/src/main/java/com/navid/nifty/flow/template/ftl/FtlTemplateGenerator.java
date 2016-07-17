@@ -29,7 +29,7 @@ public abstract class FtlTemplateGenerator implements ScreenGenerator {
     }
 
     @Override
-    public void buildScreen(String screenUniqueId) {
+    public void buildScreen(String screenUniqueId, String controllerClassName) {
         //remove old version if it exists
         if (nifty.getScreen(screenUniqueId) != null) {
             nifty.removeScreen(screenUniqueId);
@@ -37,6 +37,7 @@ public abstract class FtlTemplateGenerator implements ScreenGenerator {
 
         Map root = new HashMap();
         root.put("screenUniqueId", screenUniqueId);
+        root.put("controllerClassName", controllerClassName);
         root.putAll(injectProperties());
         try {
             Template temp = configuration.getTemplate(templateFileName);

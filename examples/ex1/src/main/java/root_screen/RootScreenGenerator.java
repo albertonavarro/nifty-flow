@@ -23,7 +23,7 @@ public final class RootScreenGenerator implements ScreenGenerator {
     }
 
     @Override
-    public void buildScreen(String uniqueScreenId) {
+    public void buildScreen(String uniqueScreenId, String controllerClassName) {
 
         final PanelBuilder panelModules = new PanelBuilder("Panel_Modules") {
             {

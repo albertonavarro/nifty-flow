@@ -29,10 +29,11 @@ public class StaticScreenGenerator implements ScreenGenerator {
     }
 
     @Override
-    public void buildScreen(String screenUniqueId) {
+    public void buildScreen(String screenUniqueId, String controllerClassName) {
         if (nifty.getScreen(screenUniqueId) == null) {
             Map root = new HashMap();
             root.put("screenUniqueId", screenUniqueId);
+            root.put("controllerClassName", controllerClassName);
             try {
                 Template temp = configuration.getTemplate(templateFileName);
 

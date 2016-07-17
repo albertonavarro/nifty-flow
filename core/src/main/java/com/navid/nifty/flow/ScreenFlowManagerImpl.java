@@ -187,7 +187,7 @@ public class ScreenFlowManagerImpl implements ScreenFlowManager{
             nextScreenHint = null;
         }
 
-        currentScreen.getInterfaceConstructor().buildScreen(currentScreen.getUniqueScreenName());
+        currentScreen.getInterfaceConstructor().buildScreen(currentScreen.getUniqueScreenName(), currentScreen.getController().getClass().getCanonicalName());
         return currentScreen.getUniqueScreenName();
     }
 

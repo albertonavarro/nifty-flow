@@ -29,7 +29,7 @@ public class Generator2 implements ScreenGenerator {
     }
 
     @Override
-    public void buildScreen(String uniqueScreenId) {
+    public void buildScreen(String uniqueScreenId, String controllerClassName) {
         if (nifty.getScreen(uniqueScreenId) != null) {
             nifty.removeScreen(uniqueScreenId);
         }

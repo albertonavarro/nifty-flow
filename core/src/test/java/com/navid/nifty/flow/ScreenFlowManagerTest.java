@@ -5,6 +5,7 @@ import com.navid.nifty.flow.domain.Screen;
 import com.navid.nifty.flow.dto.FlowDefinition;
 import com.navid.nifty.flow.dto.ScreenDefinition;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.screen.ScreenController;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +72,9 @@ public class ScreenFlowManagerTest {
         ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
 
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenControler("controllerClass")).thenReturn(mock(ScreenController.class));
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+        when(instanceResolutor.resolveScreenControler("controllerClass2")).thenReturn(mock(ScreenController.class));
 
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
@@ -121,7 +124,9 @@ public class ScreenFlowManagerTest {
         ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
 
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenControler("controllerClass")).thenReturn(mock(ScreenController.class));
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+        when(instanceResolutor.resolveScreenControler("controllerClass2")).thenReturn(mock(ScreenController.class));
 
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
@@ -145,7 +150,9 @@ public class ScreenFlowManagerTest {
         ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
 
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenControler("controllerClass")).thenReturn(mock(ScreenController.class));
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+        when(instanceResolutor.resolveScreenControler("controllerClass2")).thenReturn(mock(ScreenController.class));
 
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
@@ -167,7 +174,9 @@ public class ScreenFlowManagerTest {
         ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
 
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenControler("controllerClass")).thenReturn(mock(ScreenController.class));
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+        when(instanceResolutor.resolveScreenControler("controllerClass2")).thenReturn(mock(ScreenController.class));
 
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
@@ -191,7 +200,10 @@ public class ScreenFlowManagerTest {
         ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
 
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenControler("controllerClass")).thenReturn(mock(ScreenController.class));
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+        when(instanceResolutor.resolveScreenControler("controllerClass2")).thenReturn(mock(ScreenController.class));
+
 
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
@@ -232,7 +244,9 @@ public class ScreenFlowManagerTest {
         ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
 
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenControler("controllerClass")).thenReturn(mock(ScreenController.class));
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+        when(instanceResolutor.resolveScreenControler("controllerClass2")).thenReturn(mock(ScreenController.class));
 
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
@@ -288,7 +302,9 @@ public class ScreenFlowManagerTest {
         ScreenGenerator interfaceConstructor2 = mock(ScreenGenerator.class);
 
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor")).thenReturn(interfaceConstructor);
+        when(instanceResolutor.resolveScreenControler("controllerClass")).thenReturn(mock(ScreenController.class));
         when(instanceResolutor.resolveScreenGenerator("interfaceConstructor2")).thenReturn(interfaceConstructor2);
+        when(instanceResolutor.resolveScreenControler("controllerClass2")).thenReturn(mock(ScreenController.class));
 
         tested.addScreenDefinition(sc1);
         tested.addScreenDefinition(sc2);
