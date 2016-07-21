@@ -1,5 +1,5 @@
 language: java
 script:
-  - ./gradlew clean build publish
+  - ./gradlew clean build publish --info
 jdk:
   - openjdk6
