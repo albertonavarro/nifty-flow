@@ -4,4 +4,4 @@ env:
 script:
   - ./gradlew clean build publish --stacktrace
 jdk:
-  - openjdk8
+  - oraclejdk8
