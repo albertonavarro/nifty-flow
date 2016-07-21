@@ -1,4 +1,6 @@
 language: java
+env:
+  - TERM=dumb
 script:
   - ./gradlew clean build publish --stacktrace
 jdk:
