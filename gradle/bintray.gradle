@@ -9,11 +9,10 @@ bintray {
     publish = true
 
     pkg {
-        repo = "mp-maven"
-        userOrg = "metapack"
+        repo = "maven"
         name = archivesBaseName
         desc = project.description
-        labels = ["metapack"]
+        labels = ["nifty-flow"]
     }
 }
 
