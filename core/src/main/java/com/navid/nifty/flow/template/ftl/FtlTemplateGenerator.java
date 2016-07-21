@@ -9,7 +9,6 @@ import freemarker.template.TemplateException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,7 @@ public abstract class FtlTemplateGenerator implements ScreenGenerator {
 
             temp.process(root, sw);
             nifty.registerScreenController();
-            nifty.addXml( new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8)));
+            nifty.addXml( new ByteArrayInputStream(sw.toString().getBytes("UTF-8")));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (TemplateException e) {

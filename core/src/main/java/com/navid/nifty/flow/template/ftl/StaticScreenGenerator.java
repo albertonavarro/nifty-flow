@@ -5,10 +5,8 @@ import de.lessvoid.nifty.Nifty;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.apache.commons.io.input.ReaderInputStream;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,7 +39,7 @@ public class StaticScreenGenerator implements ScreenGenerator {
 
                 temp.process(root, sw);
                 nifty.registerScreenController();
-                nifty.addXml( new ByteArrayInputStream(sw.toString().getBytes(StandardCharsets.UTF_8)));
+                nifty.addXml( new ByteArrayInputStream(sw.toString().getBytes("UTF-8")));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (TemplateException e) {
