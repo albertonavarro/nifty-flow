@@ -1,0 +1,47 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+
+bintray {
+    user = repositoryUser
+    key = repositoryPass
+    publications = ['jarPomAndSources']
+
+    publish = true
+
+    pkg {
+        repo = "mp-maven"
+        userOrg = "metapack"
+        name = archivesBaseName
+        desc = project.description
+        labels = ["metapack"]
+    }
+}
+
+publish.dependsOn bintrayUpload
+
+publishing {
+    publications {
+        jarPomAndSources(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+                classifier "javadoc"
+            }
+
+            artifactId archivesBaseName
+
+        }
+    }
+
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}

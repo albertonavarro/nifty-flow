@@ -1,6 +1,13 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'maven-publish'
+apply from: '../gradle/bintray.gradle'
 
 repositories {
     mavenLocal()
@@ -10,12 +17,6 @@ repositories {
 
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
-
-install {
-    repositories.mavenInstaller {
-        pom.artifactId = 'nifty-flow'
-    }
-}
 
 group = "com.navid.nifty"
 version = "0.6.0"
@@ -58,18 +59,4 @@ dependencies {
     )
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
 
