@@ -9,7 +9,7 @@ bintray {
     publish = true
 
     pkg {
-        repo = "maven"
+        repo = 'generic'
         name = archivesBaseName
         desc = project.description
         labels = ["nifty-flow"]
