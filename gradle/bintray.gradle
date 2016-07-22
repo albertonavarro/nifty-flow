@@ -30,7 +30,8 @@ publishing {
                 classifier "javadoc"
             }
 
-            artifactId archivesBaseName
+            artifactId "nifty-flow"
+            groupId "com.navid.nifty"
 
         }
     }
