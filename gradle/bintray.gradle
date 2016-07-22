@@ -10,7 +10,7 @@ bintray {
 
     pkg {
         repo = 'generic'
-        name = archivesBaseName
+        name = "nifty-flow"
         desc = project.description
         labels = ["nifty-flow"]
     }
