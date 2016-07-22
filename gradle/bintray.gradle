@@ -12,6 +12,8 @@ bintray {
         repo = 'generic'
         name = "nifty-flow"
         desc = project.description
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/albertonavarro/nifty-flow.git'
         labels = ["nifty-flow"]
     }
 }
