@@ -9,7 +9,7 @@ bintray {
     publish = true
 
     pkg {
-        repo = 'generic'
+        repo = 'maven'
         name = "nifty-flow"
         desc = project.description
         licenses = ['Apache-2.0']
