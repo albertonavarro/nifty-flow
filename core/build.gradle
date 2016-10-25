@@ -12,14 +12,15 @@ apply from: '../gradle/bintray.gradle'
 repositories {
     mavenLocal()
     jcenter()
-    maven{url 'http://nifty-gui.sourceforge.net/nifty-maven-repo'}
+    maven{ url 'http://nifty-gui.sourceforge.net/nifty-maven-repo' }
+    maven { url "http://dl.bintray.com/jmonkeyengine/com.jme3" }
 }
 
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
 
 group = "com.navid.nifty"
-version = "0.6.0"
+version = "0.6.1"
 
 ext{
     v = [
@@ -28,9 +29,9 @@ ext{
 
     deps = [
             //NIFTY
-            nifty: 'lessvoid:nifty:'+ v.nifty,
-            nifty_default_controls: 'lessvoid:nifty-default-controls:' + v.nifty,
-            nifty_style_black: 'lessvoid:nifty-style-black:' + v.nifty,
+            nifty: 'com.jme3-lib:nifty:'+ v.nifty,
+            nifty_default_controls: 'com.jme3-lib:nifty-default-controls:' + v.nifty,
+            nifty_style_black: 'com.jme3-lib:nifty-style-black:' + v.nifty,
             junit: 'junit:junit:4.10',
             slf4j_api: 'org.slf4j:slf4j-api:1.7.2',
             guava: 'com.google.guava:guava:18.0',
@@ -50,7 +51,8 @@ dependencies {
             deps.guava,
             deps.jgrapht,
             deps.freemarker,
-            deps.apache_commons_io
+            deps.apache_commons_io,
+            'org.bushe:eventbus:1.4'
     )
 
     testCompile(
